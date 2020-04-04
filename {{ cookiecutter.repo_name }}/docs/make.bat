@@ -5,6 +5,9 @@ REM Command file for Sphinx documentation
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
+if "%SPHINXAPIDOC%" == "" (
+	set SPHINXAPIDOC=sphinx-apidoc
+)
 set BUILDDIR=_build
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% .
 set I18NSPHINXOPTS=%SPHINXOPTS% .
@@ -35,6 +38,8 @@ if "%1" == "help" (
 	echo.  changes    to make an overview over all changed/added/deprecated items
 	echo.  linkcheck  to check all external links for integrity
 	echo.  doctest    to run all doctests embedded in the documentation if enabled
+	echo.  apidoc     to make API documentation
+	echo.  github     to make and copy HTML files in ../docs for github pages
 	goto end
 )
 
@@ -184,6 +189,21 @@ if "%1" == "doctest" (
 	echo.
 	echo.Testing of doctests in the sources finished, look at the ^
 results in %BUILDDIR%/doctest/output.txt.
+	goto end
+)
+
+if "%1" == "apidoc" (
+    %SPHINXAPIDOC% -f -o . ../src
+    echo.Build finished. API documents are in ../docs
+    goto end
+)
+
+if "%1" == "github" (
+	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%/html
+	if errorlevel 1 exit /b 1
+	echo.
+	robocopy %BUILDDIR%/html ../docs /E > nul
+    echo.Generated files copied to ../docs
 	goto end
 )
 
