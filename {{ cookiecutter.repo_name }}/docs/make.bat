@@ -9,6 +9,7 @@ if "%SPHINXAPIDOC%" == "" (
 	set SPHINXAPIDOC=sphinx-apidoc
 )
 set BUILDDIR=_build
+set DEPLOYDIR=deploy
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% .
 set I18NSPHINXOPTS=%SPHINXOPTS% .
 if NOT "%PAPER%" == "" (
@@ -22,6 +23,7 @@ if "%1" == "help" (
 	:help
 	echo.Please use `make ^<target^>` where ^<target^> is one of
 	echo.  html       to make standalone HTML files
+	echo.  deploy     to make HTML files for gh-pages
 	echo.  dirhtml    to make HTML files named index.html in directories
 	echo.  singlehtml to make a single large HTML file
 	echo.  pickle     to make pickle files
@@ -39,7 +41,7 @@ if "%1" == "help" (
 	echo.  linkcheck  to check all external links for integrity
 	echo.  doctest    to run all doctests embedded in the documentation if enabled
 	echo.  apidoc     to make API documentation
-	echo.  github     to make and copy HTML files in ../docs for github pages
+	echo.  github     to deploy the HTML pages
 	goto end
 )
 
@@ -49,11 +51,26 @@ if "%1" == "clean" (
 	goto end
 )
 
+if "%1" == "clean-deploy" (
+	for /d %%i in (%DEPLOYDIR%\*) do rmdir /q /s %%i
+	del /q /s %DEPLOYDIR%\*
+	goto end
+)
+
 if "%1" == "html" (
 	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%/html
 	if errorlevel 1 exit /b 1
 	echo.
 	echo.Build finished. The HTML pages are in %BUILDDIR%/html.
+	goto end
+)
+
+if "%1" == "deploy" (
+	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %DEPLOYDIR%
+	if errorlevel 1 exit /b 1
+	type null > %DEPLOYDIR%/.nojekyll
+	echo.
+	echo.Build finished. The HTML pages are in %DEPLOYDIR%/html.
 	goto end
 )
 
@@ -199,11 +216,8 @@ if "%1" == "apidoc" (
 )
 
 if "%1" == "github" (
-	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%/html
-	if errorlevel 1 exit /b 1
-	echo.
-	robocopy %BUILDDIR%/html ../docs /E > nul
-    echo.Generated files copied to ../docs
+    echo git subtree push --prefix deploy origin gh-pages
+    echo.Deploy the HTML pages
 	goto end
 )
 

@@ -7,6 +7,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXAPIDOC  = sphinx-apidoc
 PAPER         =
 BUILDDIR      = _build
+DEPLOYDIR       = deploy
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -20,6 +21,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
+	@echo "  deploy     to make HTML files for gh-pages"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
 	@echo "  pickle     to make pickle files"
@@ -39,15 +41,23 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 	@echo "  apidoc     to make API documentation"
-	@echo "  github     to make and copy HTML files in ../docs for github pages"
+	@echo "  github     to deploy the HTML pages"
 
 clean:
 	-rm -rf $(BUILDDIR)/*
+
+clean-deploy:
+	-rm -rf $(DEPLOYDIR)/*
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+deploy:
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(DEPLOYDIR)
+	touch $(DEPLOYDIR)/.nojekyll
+	@echo "Build finished. The HTML pages are in $(DEPLOYDIR) for gh-pages"
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
@@ -160,6 +170,6 @@ apidoc:
 	@echo "Build finished. API documents are in ../docs"
 
 github:
-	@make html
-	@cp -a $(BUILDDIR)/html/. ../docs
-	@echo "Generated files copied to ../docs"
+	@git subtree push --prefix deploy origin gh-pages
+	@echo "Deploy the HTML pages"
+
