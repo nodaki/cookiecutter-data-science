@@ -4,6 +4,8 @@
 # external requirements
 click
 Sphinx
+Sphinx-rtd-theme
+Sphinx-click
 coverage
 awscli
 flake8
